@@ -77,16 +77,16 @@ def extract_metadata(photo_dir):
 
     for root, _, files in os.walk(photo_dir):
         for idx, file in enumerate(files):
+            file_path = os.path.join(root, file)
             
             if idx % 100 == 0:
-                s = f"Processing file {idx}/{len(files)} in current directory: {file}"
+                s = f"Processing file {idx}/{len(files)} in current directory: {file_path}"
                 print(s); LOGGER.info(s)
             
             if file.lower().endswith(('.jpg', '.jpeg', '.png', '.heic')) and not file.startswith("._"):
-                image_path = os.path.join(root, file)
-                filename = image_path.split('/')[-1]
+                filename = file_path.split('/')[-1]
                 
-                exif = get_exif_data(image_path)
+                exif = get_exif_data(file_path)
                 
                 if not exif:
                     data.append({"filename": filename, "error": "no exif data"})
