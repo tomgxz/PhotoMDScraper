@@ -1,4 +1,6 @@
 datetime==5.5
 ExifRead==3.0.0
+folium==0.17.0
+pandas==2.2.2
 pillow==11.0.0
 pillow-heif==0.20.0
