@@ -27,4 +27,4 @@ HeatMap(heat_data, radius=8, blur=15, max_zoom=1).add_to(m)
 
 # Save map as an HTML file
 m.save('./output/map.html')
-print("Map saved as map.html")
+print("Map saved to /output/map.html")
