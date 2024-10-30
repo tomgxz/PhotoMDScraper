@@ -1,8 +1,27 @@
-import json
-import os
+import json, os, logging, pillow_heif, sys, datetime
 from datetime import datetime
 from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
+
+LOG_PATH = "./log"
+LOG_CONSOLE_LEVEL = 50
+
+logger_console = logging.StreamHandler(sys.stdout)
+logger_console.setLevel(LOG_CONSOLE_LEVEL)
+logger_fh = logging.FileHandler(f"{LOG_PATH}/{datetime.now().strftime('%Y_%m_%d_%H_%M_%S_%f')}.log")
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[
+        logger_fh,
+        logger_console
+    ]
+)
+
+LOGGER = logging.getLogger()
+
+pillow_heif.register_heif_opener() # Register HEIF support with Pillow
 
 
 def get_exif_data(image_path:str) -> dict | None:
@@ -10,13 +29,16 @@ def get_exif_data(image_path:str) -> dict | None:
         image = Image.open(image_path)
         
         exif_data = image._getexif()
-        if not exif_data: return None
+        
+        if not exif_data: 
+            LOGGER.warning(f"Error reading {image_path}: No exif data found in file")
+            return None
         
         # return exif data as a dict
         return {TAGS.get(tag): value for tag, value in exif_data.items() if tag in TAGS}
     
     except Exception as e:
-        print(f"Error reading {image_path}: {e}")
+        LOGGER.error(f"Error reading {image_path}: {e}")
         return None
 
 
@@ -39,23 +61,37 @@ def get_lat_lon(gps_info):
 
 
 def format_timestamp(timestamp_str):
+    if not timestamp_str: return
+    
     try:
         dt = datetime.strptime(timestamp_str, '%Y:%m:%d %H:%M:%S')
         return dt.strftime('%Y-%m-%dT%H:%M:%SZ')
-    except:
+    except Exception as e:
+        LOGGER.warning(f"Error formatting timestamp '{timestamp_str}': {e}")
         return None
 
 
 def extract_metadata(photo_dir):
     data = []
+    LOGGER.info(f"Starting metadata extraction from photos in {photo_dir}")
+
     for root, _, files in os.walk(photo_dir):
-        for file in files:
-            if file.lower().endswith(('.jpg', '.jpeg', '.png')): # TODO: heic?
+        for idx, file in enumerate(files):
+            
+            if idx % 100 == 0:
+                s = f"Processing file {idx}/{len(files)} in current directory: {file}"
+                print(s); LOGGER.info(s)
+            
+            if file.lower().endswith(('.jpg', '.jpeg', '.png', '.heic')) and not file.startswith("._"):
                 image_path = os.path.join(root, file)
                 filename = image_path.split('/')[-1]
                 
                 exif = get_exif_data(image_path)
                 
+                if not exif:
+                    data.append({"filename": filename, "error": "no exif data"})
+                    continue
+                    
                 gps_info = exif.get("GPSInfo") # TODO: property doesn't exist?
                 timestamp = exif.get("DateTimeOriginal") or exif.get("DateTime")
                 
@@ -80,10 +116,13 @@ def extract_metadata(photo_dir):
     return data
 
 # Set path to your local photo directory
-photo_directory = "./example/"
+PHOTO_DIR = "/Volumes/EXTERNAL2/Images/CAMERA ROLL"
+OUTPUT_FILE = "./output/photo_metadata.json"
 
-metadata = extract_metadata(photo_directory)
-with open("./output/photo_metadata.json", "w") as f:
+metadata = extract_metadata(PHOTO_DIR)
+
+with open(OUTPUT_FILE, "w") as f:
     json.dump(metadata, f, indent=4)
+    LOGGER.info(f"Metadata saved to {OUTPUT_FILE}")
 
-print("Metadata extraction complete. Saved as photo_metadata.json")
+print(f"Metadata saved to {OUTPUT_FILE}")
