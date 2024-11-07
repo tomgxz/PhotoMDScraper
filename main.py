@@ -5,9 +5,9 @@ images_end_time = None
 
 import json, os, logging, sys, humanize
 import numpy as np
-import imageio.v2 as imageio
 from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
+import pillow_heif
 
 LOG_PATH = "./log"
 LOG_CONSOLE_LEVEL = 50
@@ -47,7 +47,8 @@ def get_exif_data(image_path:str,heic:bool=False) -> dict | None:
         return {TAGS.get(tag): value for tag, value in exif_data.items() if tag in TAGS}
     
     except Exception as e:
-        LOGGER.error(f"Error reading {image_path}: {e}")
+        exc_type, exc_obj, exc_tb = sys.exc_info(); fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        LOGGER.error(f"Error reading {image_path} on: {exc_type} in {fname} at line {exc_tb.tb_lineno}: {e}")
         return None
 
 
@@ -76,7 +77,8 @@ def format_timestamp(timestamp_str: str) -> str:
         dt = datetime.strptime(timestamp_str, '%Y:%m:%d %H:%M:%S')
         return dt.strftime('%Y-%m-%dT%H:%M:%SZ')
     except Exception as e:
-        LOGGER.warning(f"Error formatting timestamp '{timestamp_str}': {e}")
+        exc_type, exc_obj, exc_tb = sys.exc_info(); fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        LOGGER.warning(f"Error formatting timestamp '{timestamp_str}': {exc_type} in {fname} at line {exc_tb.tb_lineno}: {e}")
         return None
 
 
