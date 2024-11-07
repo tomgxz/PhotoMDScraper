@@ -162,4 +162,11 @@ print(f"------------------------\nMetadata saved to {OUTPUT_FILE}\nCompleted in 
 print(f"------------------------\nTotal files in directory: {feedback['total']}\nImages processed: {feedback['processed']}\nImages without exif data: {feedback['processed'] - feedback['has_exif']}\nImages without gps: {feedback['processed'] - feedback['has_gps']}\nFailed: {feedback['failed']}")
 print(f"------------------------")
 
+with open("./output/history.json", "r") as f:
+    try: history = json.load(f)
+    except json.JSONDecodeError as e: history = {}
+    history[str(START_TIME)] = feedback
+
+with open("./output/history.json", "w") as f: json.dump(history, f, indent=4)
+
 import map
