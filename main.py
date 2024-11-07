@@ -104,7 +104,7 @@ def extract_metadata(photo_dir: str) -> list[dict]:
             idx += 1 # increment counter
             
             if idx % 100 == 0 or idx == 1:
-                s = f"Processing file {idx}/{total_files} in current directory: {file_path}"
+                s = f"Processing file {idx}/{total_files}: {file_path}"
                 print(s); LOGGER.info(s)
             
             if file.lower().endswith(('.jpg', '.jpeg', '.png', '.heic')) and not file.startswith("._"):
