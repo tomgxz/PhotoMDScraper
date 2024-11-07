@@ -160,3 +160,6 @@ image_duration = images_end_time - images_start_time
 
 print(f"------------------------\nMetadata saved to {OUTPUT_FILE}\nCompleted in {humanize.precisedelta(DURATION, minimum_unit="microseconds", suppress=["days"])}\nAverage time per image: {humanize.precisedelta((image_duration/feedback['processed']) if feedback["processed"] > 0 else 0, minimum_unit="microseconds", suppress=["days"])}")
 print(f"------------------------\nTotal files in directory: {feedback['total']}\nImages processed: {feedback['processed']}\nImages without exif data: {feedback['processed'] - feedback['has_exif']}\nImages without gps: {feedback['processed'] - feedback['has_gps']}\nFailed: {feedback['failed']}")
+print(f"------------------------")
+
+import map
