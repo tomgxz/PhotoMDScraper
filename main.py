@@ -32,9 +32,30 @@ feedback = {"total": 0,"processed": 0,"has_exif": 0,"has_timestamp": 0,"has_gps"
 def get_exif_data(image_path:str,heic:bool=False) -> dict | None:
     try:
         if heic:
-            image_data:np.ndarray = imageio.imread(image_path)
-            image = Image.fromarray(image_data)
-            exif_data = image.getexif()
+            newpath = image_path+'.JPG'
+            
+            # Open image and convert it to JPEG
+            image_heic = pillow_heif.read_heif(image_path)
+            
+            image = Image.frombytes(
+                image_heic.mode,
+                image_heic.size,
+                image_heic.data,
+                "raw",
+                image_heic.mode,
+                image_heic.stride,
+            )
+            
+            dictionary=image_heic.info
+            exif_dict=dictionary['exif']
+            
+            image.save(newpath, "JPEG", exif=exif_dict) # TODO: Can this be done without saving the file, cos this is bad
+            
+            image = Image.open(newpath)
+            exif_data = image._getexif()
+            
+            os.remove(newpath)
+            
         else:
             image = Image.open(image_path)
             exif_data = image._getexif()
