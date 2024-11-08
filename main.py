@@ -1,7 +1,8 @@
-from datetime import datetime
-START_TIME = datetime.now()
-images_start_time = None
-images_end_time = None
+if __name__ == "__main__":
+    from datetime import datetime
+    START_TIME = datetime.now()
+    images_start_time = None
+    images_end_time = None
 
 import json, os, logging, sys, humanize
 import numpy as np
@@ -167,29 +168,39 @@ def extract_metadata(photo_dir: str) -> list[dict]:
 
     return data
 
-# Set path to your local photo directory
-PHOTO_DIR = "/Volumes/EXTERNAL2/Images/CAMERA ROLL/"
-OUTPUT_FILE = "./output/photo_metadata.json"
 
-metadata = extract_metadata(PHOTO_DIR)
+def save(metadata:json) -> None:
+    with open(OUTPUT_FILE, "w") as f:
+        json.dump(metadata, f, indent=4)
+        LOGGER.info(f"Metadata saved to {OUTPUT_FILE}")
 
-with open(OUTPUT_FILE, "w") as f:
-    json.dump(metadata, f, indent=4)
-    LOGGER.info(f"Metadata saved to {OUTPUT_FILE}")
 
-END_TIME = datetime.now()
-DURATION = END_TIME - START_TIME
-image_duration = images_end_time - images_start_time
+def savefeedback():
+    with open("./output/history.json", "r") as f:
+        try: history = json.load(f)
+        except json.JSONDecodeError as e: history = {}
+        history[str(START_TIME)] = feedback
+    
+    with open("./output/history.json", "w") as f: json.dump(history, f, indent=4)
+    
 
-print(f"------------------------\nMetadata saved to {OUTPUT_FILE}\nCompleted in {humanize.precisedelta(DURATION, minimum_unit="microseconds", suppress=["days"])}\nAverage time per image: {humanize.precisedelta((image_duration/feedback['processed']) if feedback["processed"] > 0 else 0, minimum_unit="microseconds", suppress=["days"])}")
-print(f"------------------------\nTotal files in directory: {feedback['total']}\nImages processed: {feedback['processed']}\nImages without exif data: {feedback['processed'] - feedback['has_exif']}\nImages without gps: {feedback['processed'] - feedback['has_gps']}\nFailed: {feedback['failed']}")
-print(f"------------------------")
+if __name__ == "__main__":
 
-with open("./output/history.json", "r") as f:
-    try: history = json.load(f)
-    except json.JSONDecodeError as e: history = {}
-    history[str(START_TIME)] = feedback
+    # Set path to your local photo directory
+    PHOTO_DIR = "/Volumes/EXTERNAL2/Images/CAMERA ROLL/"
+    OUTPUT_FILE = "./output/photo_metadata.json"
 
-with open("./output/history.json", "w") as f: json.dump(history, f, indent=4)
+    metadata = extract_metadata(PHOTO_DIR)
+    save(metadata)
 
-import map
+    END_TIME = datetime.now()
+    DURATION = END_TIME - START_TIME
+    image_duration = images_end_time - images_start_time
+
+    print(f"------------------------\nMetadata saved to {OUTPUT_FILE}\nCompleted in {humanize.precisedelta(DURATION, minimum_unit="microseconds", suppress=["days"])}\nAverage time per image: {humanize.precisedelta((image_duration/feedback['processed']) if feedback["processed"] > 0 else 0, minimum_unit="microseconds", suppress=["days"])}")
+    print(f"------------------------\nTotal files in directory: {feedback['total']}\nImages processed: {feedback['processed']}\nImages without exif data: {feedback['processed'] - feedback['has_exif']}\nImages without gps: {feedback['processed'] - feedback['has_gps']}\nFailed: {feedback['failed']}")
+    print(f"------------------------")
+
+    savefeedback()
+
+    import map
