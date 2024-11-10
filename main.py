@@ -204,3 +204,14 @@ if __name__ == "__main__":
     savefeedback()
 
     import map
+
+
+"""
+2024-11-10 00:05:54,662 - WARNING - Error formatting timestamp '2012:07:18 07:53: 2': <class 'ValueError'> in main.py at line 99: time data '2012:07:18 07:53: 2' does not match format '%Y:%m:%d %H:%M:%S'
+2024-11-10 00:13:32,677 - ERROR - Error reading E:/_steve and jane/Photos\2016\2016-08 Canada from Jo\aug cabelas 2016 4.jpg on: <class 'PIL.UnidentifiedImageError'> in main.py at line 61: cannot identify image file 'E:\\_steve and jane\\Photos\\2016\\2016-08 Canada from Jo\\aug cabelas 2016 4.jpg'
+2024-11-10 00:56:09,762 - ERROR - Error reading E:/_steve and jane/Photos\2021\2021 steve iphoneSE\111APPLE\IMG_1689.JPG on: <class 'PIL.UnidentifiedImageError'> in main.py at line 61: cannot identify image file 'E:\\_steve and jane\\Photos\\2021\\2021 steve iphoneSE\\111APPLE\\IMG_1689.JPG'
+2024-11-10 00:56:09,763 - ERROR - Error reading E:/_steve and jane/Photos\2021\2021 steve iphoneSE\111APPLE\IMG_1690.JPG on: <class 'PIL.UnidentifiedImageError'> in main.py at line 61: cannot identify image file 'E:\\_steve and jane\\Photos\\2021\\2021 steve iphoneSE\\111APPLE\\IMG_1690.JPG'
+2024-11-10 00:56:09,764 - ERROR - Error reading E:/_steve and jane/Photos\2021\2021 steve iphoneSE\111APPLE\IMG_1691.JPG on: <class 'PIL.UnidentifiedImageError'> in main.py at line 61: cannot identify image file 'E:\\_steve and jane\\Photos\\2021\\2021 steve iphoneSE\\111APPLE\\IMG_1691.JPG'
+2024-11-10 00:58:04,899 - WARNING - Error formatting timestamp '0000:00:00 00:00:00': <class 'ValueError'> in main.py at line 99: time data '0000:00:00 00:00:00' does not match format '%Y:%m:%d %H:%M:%S'
+Error reading E:/_steve and jane/Photos\2023\2023 steves phone\202312__\IMG_6761.HEIC on: <class 'PermissionError'> in main.py at line 58: [WinError 32] The process cannot access the file because it is being used by another process: 'E:/_steve and jane/Photos\\2023\\2023 steves phone\\202312__\\IMG_6761.HEIC.JPG'
+"""
